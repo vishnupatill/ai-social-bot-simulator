@@ -7,15 +7,14 @@ A fully autonomous system that simulates **1 000 AI-powered social media bots** 
 ## Features
 
 | Feature | Detail |
-|---|---|
-| 🤖 Bot profiles | 1 000 unique profiles with UUID, name, skills, education, experience |
-| ✍️ LLM posts | Human-like posts via Google Gemini 1.5 Flash |
-| 🖼️ AI images | Stable Diffusion XL via Hugging Face Inference API (free) |
-| ⚡ Async engine | Batched async execution – respects API rate limits |
-| 📅 Scheduler | Configurable delays between bots and batches |
-| 💾 Storage | Append-safe JSON persistence (`posts.json`) |
-| 📋 Logging | File + console logging (`simulator.log`) |
-| 🧪 Demo mode | Fully functional without API keys |
+Bot profiles | 1 000 unique profiles with UUID, name, skills, education, experience |
+LLM posts | Human-like posts via Google Gemini 1.5 Flash |
+AI images | Stable Diffusion XL via Hugging Face Inference API (free) |
+Async engine | Batched async execution – respects API rate limits |
+Scheduler | Configurable delays between bots and batches |
+Storage | Append-safe JSON persistence (`posts.json`) |
+Logging | File + console logging (`simulator.log`) |
+Demo mode | Fully functional without API keys |
 
 ---
 
