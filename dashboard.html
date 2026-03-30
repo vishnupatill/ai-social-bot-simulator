@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Social Bot Simulator — Mission Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Syne:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #050810;
+    --surface:   #090d1a;
+    --panel:     #0c1120;
+    --border:    rgba(0,255,170,0.15);
+    --border-hi: rgba(0,255,170,0.45);
+    --accent:    #00ffaa;
+    --accent2:   #00aaff;
+    --accent3:   #ff6b35;
+    --accent4:   #c77dff;
+    --text:      #c8d8e8;
+    --text-dim:  #4a6080;
+    --text-hi:   #ffffff;
+    --mono:      'Share Tech Mono', monospace;
+    --sans:      'Syne', sans-serif;
+    --glow:      0 0 20px rgba(0,255,170,0.25);
+    --glow2:     0 0 30px rgba(0,170,255,0.2);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Animated grid background */
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(0,255,170,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,255,170,0.03) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: sticky; top: 0; z-index: 100;
+    background: rgba(5,8,16,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 60px;
+  }
+
+  .logo {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    color: var(--text-hi);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .logo-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50%      { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .header-stats {
+    display: flex; gap: 2rem; align-items: center;
+  }
+  .hstat {
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    letter-spacing: 0.08em;
+  }
+  .hstat span {
+    color: var(--accent);
+    font-size: 0.9rem;
+    margin-left: 6px;
+  }
+
+  .status-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(0,255,170,0.08);
+    border: 1px solid var(--border-hi);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.7rem;
+    color: var(--accent);
+    letter-spacing: 0.1em;
+  }
+  .status-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 6px var(--accent);
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+
+  /* ── LAYOUT ── */
+  main {
+    position: relative; z-index: 1;
+    max-width: 1400px; margin: 0 auto;
+    padding: 2rem;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  /* ── METRICS ROW ── */
+  .metrics-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .metric-card {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 1.25rem 1.5rem;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .metric-card:hover { border-color: var(--border-hi); }
+  .metric-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px;
+  }
+  .metric-card:nth-child(1)::before { background: var(--accent); box-shadow: 0 0 10px var(--accent); }
+  .metric-card:nth-child(2)::before { background: var(--accent2); box-shadow: 0 0 10px var(--accent2); }
+  .metric-card:nth-child(3)::before { background: var(--accent3); box-shadow: 0 0 10px var(--accent3); }
+  .metric-card:nth-child(4)::before { background: var(--accent4); box-shadow: 0 0 10px var(--accent4); }
+
+  .metric-label {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+  .metric-value {
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 2.2rem;
+    color: var(--text-hi);
+    line-height: 1;
+  }
+  .metric-sub {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-top: 0.4rem;
+  }
+
+  /* ── CONTENT AREA ── */
+  .content-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 1.5rem;
+    animation: fadeUp 0.6s 0.15s ease both;
+  }
+
+  /* ── PANEL ── */
+  .panel {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+  }
+  .panel-header {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-title {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .panel-badge {
+    font-size: 0.65rem;
+    background: rgba(0,255,170,0.1);
+    color: var(--accent);
+    border: 1px solid rgba(0,255,170,0.2);
+    padding: 2px 8px;
+    border-radius: 2px;
+  }
+
+  /* ── SIDEBAR: BOT LIST ── */
+  .bot-list {
+    max-height: 520px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-hi) transparent;
+  }
+  .bot-list::-webkit-scrollbar { width: 4px; }
+  .bot-list::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
+
+  .bot-item {
+    padding: 0.9rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    display: flex; gap: 10px; align-items: flex-start;
+    transition: background 0.2s;
+    position: relative;
+  }
+  .bot-item:hover { background: rgba(0,255,170,0.04); }
+  .bot-item.active {
+    background: rgba(0,255,170,0.06);
+    border-left: 2px solid var(--accent);
+  }
+  .bot-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 0; bottom: 0;
+    width: 2px;
+    background: var(--accent);
+    box-shadow: var(--glow);
+  }
+
+  .bot-avatar {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans);
+    font-weight: 800;
+    font-size: 0.75rem;
+    color: var(--bg);
+    flex-shrink: 0;
+    position: relative;
+  }
+  .bot-avatar::after {
+    content: '';
+    position: absolute; inset: -2px;
+    border-radius: 50%;
+    border: 1px solid var(--border-hi);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .bot-item:hover .bot-avatar::after { opacity: 1; }
+
+  .bot-info { flex: 1; min-width: 0; }
+  .bot-name {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 0.8rem;
+    color: var(--text-hi);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bot-role {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    margin-top: 2px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .bot-ts {
+    font-size: 0.58rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    padding-top: 2px;
+  }
+
+  /* ── MAIN FEED ── */
+  .feed-area { display: flex; flex-direction: column; gap: 0; }
+
+  /* Search bar */
+  .search-wrap {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 0.75rem; align-items: center;
+  }
+  .search-icon { color: var(--text-dim); font-size: 0.85rem; }
+  .search-input {
+    background: none; border: none; outline: none;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 0.8rem;
+    flex: 1;
+    caret-color: var(--accent);
+  }
+  .search-input::placeholder { color: var(--text-dim); }
+  .filter-chips {
+    display: flex; gap: 6px; align-items: center;
+    padding: 0.75rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-chips::-webkit-scrollbar { display: none; }
+  .chip {
+    font-size: 0.62rem;
+    padding: 3px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.active {
+    background: rgba(0,255,170,0.1);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Posts */
+  .posts-container {
+    max-height: 460px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-hi) transparent;
+  }
+  .posts-container::-webkit-scrollbar { width: 4px; }
+  .posts-container::-webkit-scrollbar-thumb { background: var(--border-hi); }
+
+  .post-card {
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.2s;
+    animation: fadeIn 0.4s ease both;
+  }
+  .post-card:hover { background: rgba(255,255,255,0.02); }
+  .post-card.selected { background: rgba(0,170,255,0.05); border-left: 2px solid var(--accent2); }
+
+  .post-meta {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+  .post-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-weight: 800; font-size: 0.65rem;
+    color: var(--bg); flex-shrink: 0;
+  }
+  .post-author { font-family: var(--sans); font-weight: 600; font-size: 0.8rem; color: var(--text-hi); }
+  .post-time { font-size: 0.62rem; color: var(--text-dim); margin-left: auto; }
+  .post-content {
+    font-size: 0.8rem;
+    line-height: 1.65;
+    color: var(--text);
+  }
+  .post-hashtag { color: var(--accent2); }
+
+  .post-footer {
+    display: flex; gap: 1.5rem; margin-top: 0.9rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .post-action {
+    font-size: 0.62rem;
+    color: var(--text-dim);
+    display: flex; align-items: center; gap: 5px;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .post-action:hover { color: var(--accent); }
+  .post-action.liked { color: var(--accent3); }
+
+  /* ── BOTTOM ROW ── */
+  .bottom-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1.5rem;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  /* Skills cloud */
+  .skills-cloud {
+    padding: 1.25rem;
+    display: flex; flex-wrap: wrap; gap: 6px;
+  }
+  .skill-tag {
+    font-size: 0.62rem;
+    padding: 4px 10px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    color: var(--text-dim);
+    transition: all 0.2s;
+    cursor: default;
+  }
+  .skill-tag:hover { border-color: var(--accent2); color: var(--accent2); }
+  .skill-tag.hot {
+    border-color: rgba(0,255,170,0.3);
+    color: var(--accent);
+    background: rgba(0,255,170,0.05);
+  }
+
+  /* Location list */
+  .loc-list { padding: 0.5rem 0; }
+  .loc-item {
+    padding: 0.6rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+  }
+  .loc-name { font-size: 0.75rem; color: var(--text); }
+  .loc-bar-wrap {
+    flex: 1; margin: 0 1rem;
+    height: 3px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .loc-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 2px;
+    transition: width 1s cubic-bezier(0.16,1,0.3,1);
+  }
+  .loc-count { font-size: 0.65rem; color: var(--text-dim); }
+
+  /* Activity timeline */
+  .timeline { padding: 1rem 1.25rem; }
+  .tl-item {
+    display: flex; gap: 12px; align-items: flex-start;
+    margin-bottom: 1rem;
+    position: relative;
+  }
+  .tl-item::before {
+    content: '';
+    position: absolute; left: 17px; top: 20px; bottom: -10px;
+    width: 1px;
+    background: var(--border);
+  }
+  .tl-item:last-child::before { display: none; }
+  .tl-dot {
+    width: 8px; height: 8px; border-radius: 50%;
+    margin-top: 5px; flex-shrink: 0;
+    margin-left: 13px;
+  }
+  .tl-body { flex: 1; }
+  .tl-title { font-size: 0.75rem; color: var(--text-hi); }
+  .tl-sub { font-size: 0.62rem; color: var(--text-dim); margin-top: 2px; }
+
+  /* ── BOT PROFILE MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 500;
+    background: rgba(5,8,16,0.85);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.3s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+  .modal {
+    background: var(--panel);
+    border: 1px solid var(--border-hi);
+    border-radius: 2px;
+    width: min(680px, 95vw);
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow: 0 0 60px rgba(0,255,170,0.1);
+    transform: translateY(20px);
+    transition: transform 0.3s;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-hi) transparent;
+  }
+  .modal-overlay.open .modal { transform: translateY(0); }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex; gap: 1rem; align-items: flex-start;
+    position: sticky; top: 0;
+    background: var(--panel);
+    z-index: 1;
+  }
+  .modal-avatar {
+    width: 56px; height: 56px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--sans); font-weight: 800; font-size: 1.2rem;
+    color: var(--bg); flex-shrink: 0;
+    box-shadow: 0 0 20px rgba(0,255,170,0.3);
+  }
+  .modal-name {
+    font-family: var(--sans); font-weight: 800; font-size: 1.1rem;
+    color: var(--text-hi);
+  }
+  .modal-role { font-size: 0.78rem; color: var(--accent); margin-top: 3px; }
+  .modal-loc { font-size: 0.72rem; color: var(--text-dim); margin-top: 3px; }
+  .modal-close {
+    margin-left: auto;
+    background: none; border: 1px solid var(--border); border-radius: 2px;
+    color: var(--text-dim); cursor: pointer;
+    width: 32px; height: 32px; font-size: 1rem;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; flex-shrink: 0;
+  }
+  .modal-close:hover { border-color: var(--accent3); color: var(--accent3); }
+
+  .modal-body { padding: 1.5rem; }
+  .modal-section { margin-bottom: 1.5rem; }
+  .modal-section-title {
+    font-size: 0.62rem; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--text-dim);
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-about { font-size: 0.78rem; line-height: 1.7; color: var(--text); }
+  .modal-skills { display: flex; flex-wrap: wrap; gap: 6px; }
+  .modal-skill {
+    font-size: 0.65rem; padding: 4px 10px;
+    border: 1px solid rgba(0,255,170,0.2);
+    color: var(--accent);
+    background: rgba(0,255,170,0.05);
+    border-radius: 2px;
+  }
+  .modal-exp-item { margin-bottom: 1rem; }
+  .modal-exp-title { font-family: var(--sans); font-weight: 600; font-size: 0.82rem; color: var(--text-hi); }
+  .modal-exp-company { font-size: 0.72rem; color: var(--accent2); }
+  .modal-exp-desc { font-size: 0.72rem; color: var(--text-dim); margin-top: 4px; line-height: 1.5; }
+  .modal-project {
+    font-size: 0.78rem; line-height: 1.6;
+    color: var(--accent4);
+    padding: 0.75rem;
+    background: rgba(199,125,255,0.06);
+    border: 1px solid rgba(199,125,255,0.15);
+    border-radius: 2px;
+  }
+
+  .modal-post {
+    padding: 1rem;
+    background: rgba(0,170,255,0.05);
+    border: 1px solid rgba(0,170,255,0.15);
+    border-radius: 2px;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .modal-post-ts {
+    font-size: 0.62rem; color: var(--text-dim);
+    margin-top: 0.5rem;
+  }
+
+  /* ── EMPTY STATE ── */
+  .empty-state {
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 3rem; color: var(--text-dim); text-align: center; gap: 0.75rem;
+  }
+  .empty-icon { font-size: 2rem; opacity: 0.4; }
+  .empty-text { font-size: 0.78rem; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+
+  /* ── SCROLLBAR ── */
+  * { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1100px) {
+    .content-grid { grid-template-columns: 280px 1fr; }
+    .bottom-row { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 750px) {
+    .metrics-row { grid-template-columns: 1fr 1fr; }
+    .content-grid { grid-template-columns: 1fr; }
+    .bottom-row { grid-template-columns: 1fr; }
+    .header-stats { display: none; }
+  }
+
+  /* ── TERMINAL CURSOR ── */
+  .cursor {
+    display: inline-block;
+    width: 7px; height: 14px;
+    background: var(--accent);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Load animation for file input */
+  .load-bar {
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent4));
+    background-size: 200%;
+    animation: shimmer 2s linear infinite;
+    border-radius: 1px;
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to   { background-position: -200% 0; }
+  }
+
+  .file-drop {
+    border: 2px dashed var(--border);
+    border-radius: 2px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+  .file-drop:hover, .file-drop.drag-over {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: rgba(0,255,170,0.04);
+  }
+  .file-drop input { display: none; }
+
+  .no-data-screen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 70vh;
+    gap: 1.5rem; text-align: center;
+  }
+  .ascii-logo {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    line-height: 1.3;
+    color: var(--accent);
+    opacity: 0.6;
+    white-space: pre;
+  }
+  .no-data-title {
+    font-family: var(--sans); font-weight: 800; font-size: 1.5rem;
+    color: var(--text-hi);
+  }
+  .no-data-sub { font-size: 0.78rem; color: var(--text-dim); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 0.65rem 1.4rem;
+    border: 1px solid var(--accent);
+    background: rgba(0,255,170,0.08);
+    color: var(--accent);
+    font-family: var(--mono); font-size: 0.78rem;
+    cursor: pointer; border-radius: 2px;
+    transition: all 0.2s; letter-spacing: 0.06em;
+  }
+  .btn:hover {
+    background: rgba(0,255,170,0.15);
+    box-shadow: var(--glow);
+  }
+
+  /* Notification toast */
+  .toast {
+    position: fixed; bottom: 2rem; right: 2rem; z-index: 9000;
+    background: var(--panel);
+    border: 1px solid var(--accent);
+    border-radius: 2px;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.75rem;
+    color: var(--accent);
+    box-shadow: var(--glow);
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    AI SOCIAL BOT SIMULATOR
+  </div>
+  <div class="header-stats">
+    <div class="hstat">BOTS<span id="h-bots">0</span></div>
+    <div class="hstat">POSTS<span id="h-posts">0</span></div>
+    <div class="hstat">LOCATIONS<span id="h-locs">0</span></div>
+  </div>
+  <div style="display:flex;gap:0.75rem;align-items:center;">
+    <button class="btn" onclick="document.getElementById('fileInput').click()" style="padding:0.4rem 0.9rem;font-size:0.68rem;">
+      ⬆ LOAD JSON
+    </button>
+    <div class="status-pill">
+      <div class="status-dot"></div>
+      MISSION CONTROL
+    </div>
+  </div>
+</header>
+
+<!-- Hidden file input -->
+<input type="file" id="fileInput" accept=".json" style="display:none">
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header" id="modalHeader"></div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Main -->
+<main id="app">
+  <!-- No data state -->
+  <div class="no-data-screen" id="noDataScreen">
+    <div class="ascii-logo">
+ ____   __  ____  ____  ____  __  __  ____  _  _  __   __  ____
+(  _ \ /  \(_  _)/ ___)(_  _)(  \/  )(  _ \/ )( \(  ) / _\(_  _)
+ ) _ ((  O ) )(  \___ \  )(   )    (  ) __/) \/ ( )( /    \ )(
+(____/ \__/ (__) (____/ (__) (_/\/\_)(__)  \____/(__)\_/\_/(__)</div>
+    <div class="no-data-title">Mission Control Dashboard<span class="cursor"></span></div>
+    <div class="no-data-sub">Load your posts.json file to visualize the bot network</div>
+    <div class="file-drop" id="fileDrop" onclick="document.getElementById('fileInput').click()">
+      <input type="file" id="fileInput2" accept=".json">
+      <div style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5">📂</div>
+      <div>Drop <code style="color:var(--accent)">posts.json</code> here or click to browse</div>
+      <div style="margin-top:0.5rem;font-size:0.65rem;opacity:0.6">Also works with bots.json — load either or both</div>
+    </div>
+    <button class="btn" onclick="loadDemoData()">▶ LOAD DEMO DATA</button>
+  </div>
+
+  <!-- Dashboard (hidden until data loaded) -->
+  <div id="dashboard" style="display:none">
+
+    <!-- Metrics -->
+    <div class="metrics-row">
+      <div class="metric-card">
+        <div class="metric-label">Total Posts</div>
+        <div class="metric-value" id="m-posts">0</div>
+        <div class="metric-sub">across all bots</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Active Bots</div>
+        <div class="metric-value" id="m-bots">0</div>
+        <div class="metric-sub">unique agents</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Locations</div>
+        <div class="metric-value" id="m-locs">0</div>
+        <div class="metric-sub">cities worldwide</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Top Skill</div>
+        <div class="metric-value" id="m-skill" style="font-size:1rem;line-height:2.2">—</div>
+        <div class="metric-sub">most common</div>
+      </div>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+
+      <!-- Sidebar: Bot List -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Bot Index</span>
+          <span class="panel-badge" id="bot-count-badge">0 agents</span>
+        </div>
+        <div class="bot-list" id="botList"></div>
+      </div>
+
+      <!-- Feed Panel -->
+      <div class="panel feed-area">
+        <div class="panel-header">
+          <span class="panel-title">Live Feed</span>
+          <span class="panel-badge" id="feed-count-badge">0 posts</span>
+        </div>
+        <!-- Search -->
+        <div class="search-wrap">
+          <span class="search-icon">⌕</span>
+          <input class="search-input" id="searchInput" placeholder="Search posts, names, hashtags…" oninput="filterFeed()">
+        </div>
+        <!-- Filter chips -->
+        <div class="filter-chips" id="filterChips"></div>
+        <!-- Posts -->
+        <div class="posts-container" id="postsContainer"></div>
+      </div>
+
+    </div>
+
+    <!-- Bottom Row -->
+    <div class="bottom-row">
+
+      <!-- Skills Cloud -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Skills Network</span>
+        </div>
+        <div class="skills-cloud" id="skillsCloud"></div>
+      </div>
+
+      <!-- Locations -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Geographic Spread</span>
+        </div>
+        <div class="loc-list" id="locList"></div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="panel-title">Activity Log</span>
+        </div>
+        <div class="timeline" id="timeline"></div>
+      </div>
+
+    </div>
+
+  </div><!-- /dashboard -->
+</main>
+
+<script>
+// ── State ─────────────────────────────────────────────────────────────────────
+let allPosts   = [];
+let allBots    = [];
+let botMap     = {};       // bot_id → bot profile
+let filtered   = [];
+let activeBotId = null;
+let activeChip  = 'ALL';
+let likedPosts  = new Set();
+
+// ── Colour palette per bot (deterministic) ───────────────────────────────────
+const PALETTE = [
+  ['#00ffaa','#050810'], ['#00aaff','#050810'], ['#ff6b35','#050810'],
+  ['#c77dff','#050810'], ['#ffdd57','#050810'], ['#ff4d6d','#050810'],
+  ['#06d6a0','#050810'], ['#118ab2','#050810'],
+];
+function botColor(id) {
+  const i = [...id].reduce((s,c) => s + c.charCodeAt(0), 0) % PALETTE.length;
+  return PALETTE[i];
+}
+function initials(name) {
+  return name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase();
+}
+function avatarStyle(id) {
+  const [bg] = botColor(id);
+  return `background:${bg}`;
+}
+
+// ── Load data ─────────────────────────────────────────────────────────────────
+document.getElementById('fileInput').addEventListener('change', e => handleFile(e.target.files[0]));
+document.getElementById('fileInput2').addEventListener('change', e => handleFile(e.target.files[0]));
+
+const fileDrop = document.getElementById('fileDrop');
+fileDrop.addEventListener('dragover', e => { e.preventDefault(); fileDrop.classList.add('drag-over'); });
+fileDrop.addEventListener('dragleave', () => fileDrop.classList.remove('drag-over'));
+fileDrop.addEventListener('drop', e => {
+  e.preventDefault(); fileDrop.classList.remove('drag-over');
+  handleFile(e.dataTransfer.files[0]);
+});
+
+function handleFile(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      ingestData(data);
+      showToast(`✓ Loaded ${file.name}`);
+    } catch { showToast('✗ Invalid JSON file', true); }
+  };
+  reader.readAsText(file);
+}
+
+function ingestData(data) {
+  if (!Array.isArray(data)) return;
+  // Detect if posts.json or bots.json
+  if (data[0]?.content !== undefined) {
+    // posts.json
+    allPosts = data;
+    buildBotMapFromPosts();
+  } else if (data[0]?.subheading !== undefined) {
+    // bots.json
+    allBots = data;
+    data.forEach(b => botMap[b.bot_id] = b);
+    if (allPosts.length) render();
+    else showToast('Bots loaded! Now load posts.json');
+    return;
+  }
+  render();
+}
+
+function buildBotMapFromPosts() {
+  // If we have bots.json already merged, skip; otherwise build minimal map
+  allPosts.forEach(p => {
+    if (!botMap[p.bot_id]) {
+      botMap[p.bot_id] = { bot_id: p.bot_id, name: p.name, subheading: '', location: '', skills: [], experience: [], project: '', about: '' };
+    }
+  });
+}
+
+// ── Demo data ─────────────────────────────────────────────────────────────────
+function loadDemoData() {
+  const demoNames = [
+    ['Mason Ahmed','Startup CTO | Previously @ Amazon','Vancouver, Canada',
+     ['Airflow','Data Engineering','Redis','GCP','NLP'],
+     'Developing a cross-platform mobile app with Airflow for health tracking',
+     'The best engineering decision I made this quarter: saying no to a feature. Every line of Penetration Testing code you DON\'T write is one less thing to maintain. Product velocity is subtraction, not addition. #engineeringmanagement'],
+    ['Emily Gonzalez','Product Engineer | GraphQL | Open Source','Los Angeles, CA',
+     ['GraphQL','Spark','Android Development','Solidity','LLMOps'],
+     'Architecting a zero-downtime deployment pipeline using GraphQL',
+     'Hot take: most performance problems aren\'t about Spark at all. They\'re about misunderstanding your data access patterns. Profile first. Optimize second. Never guess. #backendengineering'],
+    ['Divya Brown','Senior ML Engineer @ Anthropic | NLP','Bangalore, India',
+     ['PyTorch','Deep Learning','Transformers','Python','MLOps'],
+     'Building a vector search engine powered by Deep Learning for semantic retrieval',
+     'Just refactored our entire Deep Learning pipeline from scratch. The key insight? Complexity is almost always a symptom of unclear requirements. When you truly understand the problem, the solution simplifies itself. #softwareengineering'],
+    ['Lucas Torres','Full-Stack Engineer | React & Node | Remote','Austin, TX',
+     ['React','TypeScript','Node.js','PostgreSQL','Docker'],
+     'Building an open-source React framework for faster API development',
+     'The best engineering decision I made this quarter: saying no to a feature. Every line of React code you DON\'T write is one less thing to maintain. Product velocity is subtraction, not addition. #engineeringmanagement'],
+    ['Lucas Tanaka','Staff Engineer @ Netflix | Platform','Tokyo, Japan',
+     ['Event-Driven Architecture','Kafka','Rust','Kubernetes','Go'],
+     'Building real-time anomaly detection with Kafka and streaming data',
+     'Just refactored our entire Event-Driven Architecture pipeline from scratch. The key insight? Complexity is almost always a symptom of unclear requirements. #softwareengineering'],
+    ['Priya Kumar','DevOps Lead | AWS & Terraform | Speaker','Mumbai, India',
+     ['Terraform','Kubernetes','AWS','CI/CD','Prometheus'],
+     'Designing high-availability Kubernetes infrastructure for fintech',
+     '3 years ago I couldn\'t write a proper Terraform module. Today I architect systems handling 50K deploys/day. The only secret: consistency. #devops #cloudnative'],
+    ['James Smith','AI Researcher | Computer Vision | PhD','London, UK',
+     ['Computer Vision','PyTorch','CUDA','OpenCV','Research'],
+     'Researching novel model compression techniques using quantization',
+     'Our paper on efficient ViT distillation just got accepted! Six months of experiments, three failed approaches, countless GPU hours. Science is a grind. But it\'s worth it. #AI #research'],
+    ['Aditya Mehta','Backend Architect | Distributed Systems','Singapore',
+     ['Go','gRPC','Cassandra','Redis','System Design'],
+     'Creating a distributed caching layer with Go for high-throughput systems',
+     'The database is almost never the bottleneck. Nine times out of ten it\'s the application layer misusing the database. Profile your queries. Understand your access patterns. Then optimize. #backend'],
+  ];
+
+  const now = Date.now();
+  allPosts = demoNames.map(([name,,,,, content], i) => ({
+    bot_id: `demo-${i.toString().padStart(4,'0')}`,
+    name, content,
+    image_path: `images/demo-${i}.png`,
+    timestamp: new Date(now - i * 120000).toISOString(),
+  }));
+
+  allBots = demoNames.map(([name, subheading, location, skills, project], i) => ({
+    bot_id: `demo-${i.toString().padStart(4,'0')}`,
+    name, subheading, location, skills, project,
+    about: `Experienced engineer with deep expertise in ${skills[0]} and ${skills[1]}. Passionate about open source, clean architecture, and building things that scale.`,
+    education: [{ degree: 'M.S.', field: 'Computer Science', institution: 'Top University', year_start: 2015, year_end: 2017 }],
+    experience: [{ title: 'Senior Engineer', company: 'Big Tech Co', duration: '4 yrs', description: `Built ${skills[0]}-based systems serving 200K+ users.` }],
+  }));
+
+  allBots.forEach(b => botMap[b.bot_id] = b);
+  render();
+  showToast('✓ Demo data loaded');
+}
+
+// ── Render ────────────────────────────────────────────────────────────────────
+function render() {
+  document.getElementById('noDataScreen').style.display = 'none';
+  document.getElementById('dashboard').style.display = 'block';
+
+  filtered = [...allPosts];
+  updateMetrics();
+  renderBotList();
+  renderFilterChips();
+  renderFeed();
+  renderSkillsCloud();
+  renderLocations();
+  renderTimeline();
+}
+
+function updateMetrics() {
+  const bots = new Set(allPosts.map(p => p.bot_id));
+  const locs = new Set(Object.values(botMap).map(b => b.location).filter(Boolean));
+  // skill frequency
+  const skillFreq = {};
+  Object.values(botMap).forEach(b => (b.skills||[]).forEach(s => skillFreq[s] = (skillFreq[s]||0)+1));
+  const topSkill = Object.entries(skillFreq).sort((a,b) => b[1]-a[1])[0]?.[0] || '—';
+
+  const count = n => animateCount(n);
+  setM('m-posts', allPosts.length);
+  setM('m-bots',  bots.size);
+  setM('m-locs',  locs.size);
+  document.getElementById('m-skill').textContent = topSkill;
+  document.getElementById('h-posts').textContent = allPosts.length;
+  document.getElementById('h-bots').textContent  = bots.size;
+  document.getElementById('h-locs').textContent  = locs.size;
+  document.getElementById('bot-count-badge').textContent  = `${bots.size} agents`;
+  document.getElementById('feed-count-badge').textContent = `${allPosts.length} posts`;
+}
+
+function setM(id, val) {
+  const el = document.getElementById(id);
+  let current = 0;
+  const step = Math.ceil(val / 30);
+  const t = setInterval(() => {
+    current = Math.min(current + step, val);
+    el.textContent = current.toLocaleString();
+    if (current >= val) clearInterval(t);
+  }, 30);
+}
+
+// Bot list
+function renderBotList() {
+  const list = document.getElementById('botList');
+  const bots = Object.values(botMap);
+  if (!bots.length) {
+    list.innerHTML = '<div class="empty-state"><div class="empty-text">No bot profiles loaded</div></div>';
+    return;
+  }
+  list.innerHTML = bots.map(b => {
+    const post = allPosts.find(p => p.bot_id === b.bot_id);
+    const ts = post ? fmtTime(post.timestamp) : '';
+    return `<div class="bot-item ${activeBotId===b.bot_id?'active':''}" onclick="selectBot('${b.bot_id}')">
+      <div class="bot-avatar" style="${avatarStyle(b.bot_id)}">${initials(b.name)}</div>
+      <div class="bot-info">
+        <div class="bot-name">${b.name}</div>
+        <div class="bot-role">${b.subheading || b.location || 'Agent'}</div>
+      </div>
+      <div class="bot-ts">${ts}</div>
+    </div>`;
+  }).join('');
+}
+
+// Filter chips (unique hashtags)
+function renderFilterChips() {
+  const tags = new Set(['ALL']);
+  allPosts.forEach(p => {
+    const matches = p.content.match(/#\w+/g) || [];
+    matches.forEach(t => tags.add(t.toLowerCase()));
+  });
+  const chips = [...tags].slice(0, 12);
+  document.getElementById('filterChips').innerHTML = chips.map(tag =>
+    `<div class="chip ${activeChip===tag?'active':''}" onclick="setChip('${tag}')">${tag === 'ALL' ? 'ALL POSTS' : tag}</div>`
+  ).join('');
+}
+
+function setChip(tag) {
+  activeChip = tag;
+  renderFilterChips();
+  filterFeed();
+}
+
+function filterFeed() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  filtered = allPosts.filter(p => {
+    const matchBot = !activeBotId || p.bot_id === activeBotId;
+    const matchSearch = !q || p.content.toLowerCase().includes(q) || p.name.toLowerCase().includes(q);
+    const matchTag = activeChip === 'ALL' || p.content.toLowerCase().includes(activeChip);
+    return matchBot && matchSearch && matchTag;
+  });
+  renderFeed();
+  document.getElementById('feed-count-badge').textContent = `${filtered.length} posts`;
+}
+
+// Feed
+function renderFeed() {
+  const container = document.getElementById('postsContainer');
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">◌</div>
+      <div class="empty-text">No posts match your filter</div>
+    </div>`;
+    return;
+  }
+  container.innerHTML = filtered.map((p, i) => {
+    const [bg] = botColor(p.bot_id);
+    const content = p.content.replace(/#(\w+)/g, '<span class="post-hashtag">#$1</span>');
+    const likes = Math.floor(Math.random() * 200) + 5;
+    const comments = Math.floor(Math.random() * 40);
+    const isLiked = likedPosts.has(p.bot_id);
+    return `<div class="post-card" onclick="openBotModal('${p.bot_id}')" style="animation-delay:${i*0.04}s">
+      <div class="post-meta">
+        <div class="post-avatar" style="background:${bg}">${initials(p.name)}</div>
+        <div>
+          <div class="post-author">${p.name}</div>
+          <div style="font-size:0.62rem;color:var(--text-dim)">${botMap[p.bot_id]?.subheading || ''}</div>
+        </div>
+        <div class="post-time">${fmtTime(p.timestamp)}</div>
+      </div>
+      <div class="post-content">${content}</div>
+      <div class="post-footer">
+        <div class="post-action ${isLiked?'liked':''}" onclick="toggleLike(event,'${p.bot_id}')">
+          ${isLiked ? '♥' : '♡'} ${likes}
+        </div>
+        <div class="post-action">💬 ${comments}</div>
+        <div class="post-action">↗ Share</div>
+        <div class="post-action" style="margin-left:auto;font-size:0.6rem;color:var(--text-dim)">
+          ${p.bot_id.slice(0,8)}…
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// Skills cloud
+function renderSkillsCloud() {
+  const freq = {};
+  Object.values(botMap).forEach(b => (b.skills||[]).forEach(s => freq[s] = (freq[s]||0)+1));
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0, 30);
+  const max = sorted[0]?.[1] || 1;
+  document.getElementById('skillsCloud').innerHTML = sorted.map(([skill, count]) => {
+    const hot = count >= max * 0.5;
+    return `<div class="skill-tag ${hot?'hot':''}" title="${count} bots">${skill}</div>`;
+  }).join('');
+}
+
+// Locations
+function renderLocations() {
+  const freq = {};
+  Object.values(botMap).forEach(b => { if (b.location) freq[b.location] = (freq[b.location]||0)+1; });
+  const sorted = Object.entries(freq).sort((a,b) => b[1]-a[1]).slice(0, 8);
+  const max = sorted[0]?.[1] || 1;
+  document.getElementById('locList').innerHTML = sorted.map(([loc, count]) => {
+    const pct = Math.round(count/max*100);
+    return `<div class="loc-item">
+      <div class="loc-name">${loc}</div>
+      <div class="loc-bar-wrap"><div class="loc-bar" style="width:${pct}%"></div></div>
+      <div class="loc-count">${count}</div>
+    </div>`;
+  }).join('');
+}
+
+// Timeline
+function renderTimeline() {
+  const recent = [...allPosts].sort((a,b) => new Date(b.timestamp)-new Date(a.timestamp)).slice(0, 6);
+  const colors = ['var(--accent)','var(--accent2)','var(--accent3)','var(--accent4)'];
+  document.getElementById('timeline').innerHTML = recent.map((p, i) => {
+    const clr = colors[i % colors.length];
+    return `<div class="tl-item">
+      <div class="tl-dot" style="background:${clr};box-shadow:0 0 6px ${clr}"></div>
+      <div class="tl-body">
+        <div class="tl-title">${p.name} posted</div>
+        <div class="tl-sub">${p.content.slice(0,60)}… · ${fmtTime(p.timestamp)}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Bot selection ─────────────────────────────────────────────────────────────
+function selectBot(id) {
+  activeBotId = activeBotId === id ? null : id;
+  renderBotList();
+  filterFeed();
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openBotModal(botId) {
+  const bot = botMap[botId];
+  if (!bot) return;
+  const post = allPosts.find(p => p.bot_id === botId);
+  const [bg] = botColor(botId);
+
+  document.getElementById('modalHeader').innerHTML = `
+    <div class="modal-avatar" style="background:${bg}">${initials(bot.name)}</div>
+    <div>
+      <div class="modal-name">${bot.name}</div>
+      <div class="modal-role">${bot.subheading || 'AI Agent'}</div>
+      <div class="modal-loc">📍 ${bot.location || 'Unknown'}</div>
+    </div>
+    <button class="modal-close" onclick="document.getElementById('modal').classList.remove('open')">✕</button>
+  `;
+
+  let body = '';
+
+  if (bot.about) body += `
+    <div class="modal-section">
+      <div class="modal-section-title">About</div>
+      <div class="modal-about">${bot.about}</div>
+    </div>`;
+
+  if (bot.skills?.length) body += `
+    <div class="modal-section">
+      <div class="modal-section-title">Skills</div>
+      <div class="modal-skills">${bot.skills.map(s=>`<div class="modal-skill">${s}</div>`).join('')}</div>
+    </div>`;
+
+  if (bot.experience?.length) body += `
+    <div class="modal-section">
+      <div class="modal-section-title">Experience</div>
+      ${bot.experience.map(e => `
+        <div class="modal-exp-item">
+          <div class="modal-exp-title">${e.title}</div>
+          <div class="modal-exp-company">${e.company} · ${e.duration}</div>
+          <div class="modal-exp-desc">${e.description}</div>
+        </div>`).join('')}
+    </div>`;
+
+  if (bot.project) body += `
+    <div class="modal-section">
+      <div class="modal-section-title">Current Project</div>
+      <div class="modal-project">🚀 ${bot.project}</div>
+    </div>`;
+
+  if (post) {
+    const content = post.content.replace(/#(\w+)/g, '<span style="color:var(--accent2)">#$1</span>');
+    body += `
+    <div class="modal-section">
+      <div class="modal-section-title">Latest Post</div>
+      <div class="modal-post">${content}
+        <div class="modal-post-ts">🕐 ${new Date(post.timestamp).toLocaleString()}</div>
+      </div>
+    </div>`;
+  }
+
+  if (bot.education?.length) body += `
+    <div class="modal-section">
+      <div class="modal-section-title">Education</div>
+      ${bot.education.map(e => `
+        <div class="modal-exp-item">
+          <div class="modal-exp-title">${e.degree} in ${e.field}</div>
+          <div class="modal-exp-company">${e.institution} · ${e.year_start}–${e.year_end}</div>
+        </div>`).join('')}
+    </div>`;
+
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modal').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('open');
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.getElementById('modal').classList.remove('open');
+});
+
+// ── Interactions ──────────────────────────────────────────────────────────────
+function toggleLike(e, botId) {
+  e.stopPropagation();
+  likedPosts.has(botId) ? likedPosts.delete(botId) : likedPosts.add(botId);
+  renderFeed();
+}
+
+// ── Utils ─────────────────────────────────────────────────────────────────────
+function fmtTime(iso) {
+  if (!iso) return '';
+  const d = new Date(iso);
+  const now = Date.now();
+  const diff = Math.floor((now - d) / 1000);
+  if (diff < 60)   return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.floor(diff/3600)}h ago`;
+  return d.toLocaleDateString();
+}
+
+function showToast(msg, err=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.style.borderColor = err ? 'var(--accent3)' : 'var(--accent)';
+  t.style.color = err ? 'var(--accent3)' : 'var(--accent)';
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Animate bars after render
+setTimeout(() => {
+  document.querySelectorAll('.loc-bar').forEach(b => {
+    const w = b.style.width; b.style.width = '0';
+    setTimeout(() => b.style.width = w, 100);
+  });
+}, 300);
+</script>
+</body>
+</html>
