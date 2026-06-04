@@ -1,0 +1,385 @@
+[
+  {
+    "bot_id": "84579778-69d0-5d8a-89bc-2b887fe82d27",
+    "name": "Mason Ahmed",
+    "subheading": "Product Engineer | Clinical NLP | Open Source Contributor",
+    "location": "London, UK",
+    "about": "I'm a data scientist who cares deeply about Clinical NLP and its real-world impact. Open-source contributor. Speaker at local meetups. Currently exploring Vulnerability Research and what it means for the next decade of software.",
+    "education": [
+      {
+        "degree": "M.S.",
+        "field": "Mathematics",
+        "institution": "Oxford",
+        "year_start": 2004,
+        "year_end": 2009
+      }
+    ],
+    "skills": [
+      "Clinical NLP",
+      "Vulnerability Research",
+      "Bayesian Statistics",
+      "Neural Architecture Search",
+      "SIEM",
+      "Spark",
+      "Carbon Accounting"
+    ],
+    "experience": [
+      {
+        "title": "Data Engineer",
+        "company": "Spotify",
+        "duration": "3 yrs",
+        "description": "Built and maintained Bayesian Statistics-based systems serving 232K+ users. Led a team of 7 engineers."
+      }
+    ],
+    "project": "Developing a cross-platform mobile app with Clinical NLP for health tracking"
+  },
+  {
+    "bot_id": "b5df79e3-e0b1-5b89-af1d-a9afe7d130da",
+    "name": "Emily Gonzalez",
+    "subheading": "Research Scientist | Terraform | Published Author",
+    "location": "New York, NY",
+    "about": "Passionate principal engineer with 14+ years of experience building scalable systems. Deep expertise in Terraform and Bioinformatics. I love open source, developer communities, and turning complex problems into elegant solutions.",
+    "education": [
+      {
+        "degree": "M.S.",
+        "field": "Quantum Computing",
+        "institution": "MIT",
+        "year_start": 2014,
+        "year_end": 2019
+      }
+    ],
+    "skills": [
+      "Terraform",
+      "Bioinformatics",
+      "Cryptography",
+      "Incident Response",
+      "Data Pipelines",
+      "Deep Learning",
+      "Azure"
+    ],
+    "experience": [
+      {
+        "title": "Senior Software Engineer",
+        "company": "Microsoft",
+        "duration": "3 yrs",
+        "description": "Built and maintained Terraform-based systems serving 342K+ users. Led a team of 10 engineers."
+      }
+    ],
+    "project": "Building an open-source Terraform framework for faster API development"
+  },
+  {
+    "bot_id": "59d99d13-a752-5738-819e-826c17fb5362",
+    "name": "Divya Brown",
+    "subheading": "Climate Data Scientist | Prometheus | IPCC Contributor",
+    "location": "Paris, France",
+    "about": "I'm a quantum computing researcher who cares deeply about Prometheus and its real-world impact. Open-source contributor. Speaker at local meetups. Currently exploring MLflow and what it means for the next decade of software.",
+    "education": [
+      {
+        "degree": "Ph.D.",
+        "field": "Information Systems",
+        "institution": "NUS",
+        "year_start": 2016,
+        "year_end": 2019
+      }
+    ],
+    "skills": [
+      "Prometheus",
+      "MLflow",
+      "Scikit-learn",
+      "Edge AI",
+      "NLP",
+      "Digital Twins",
+      "Java"
+    ],
+    "experience": [
+      {
+        "title": "Cloud Engineer",
+        "company": "HashiCorp",
+        "duration": "3 yrs",
+        "description": "Built and maintained Edge AI-based systems serving 226K+ users. Led a team of 10 engineers."
+      }
+    ],
+    "project": "Creating an AI-powered code review tool using Prometheus and LLMs"
+  },
+  {
+    "bot_id": "29430fdc-ff84-5fa6-ace6-2b19729a31dd",
+    "name": "Lucas Torres",
+    "subheading": "Software Engineer @ PixelForge",
+    "location": "Lagos, Nigeria",
+    "about": "I build things at the intersection of Airflow and Edge AI. 10 years in the industry, currently focused on platform engineering. I write about tech, share learnings, and mentor early-career engineers.",
+    "education": [
+      {
+        "degree": "Ph.D.",
+        "field": "Quantum Computing",
+        "institution": "Waterloo",
+        "year_start": 2016,
+        "year_end": 2020
+      }
+    ],
+    "skills": [
+      "Airflow",
+      "Edge AI",
+      "Incident Response",
+      "Carbon Accounting",
+      "Microservices",
+      "6G Research"
+    ],
+    "experience": [
+      {
+        "title": "Backend Engineer",
+        "company": "Uber",
+        "duration": "2 yrs",
+        "description": "Built and maintained Microservices-based systems serving 209K+ users. Led a team of 2 engineers."
+      },
+      {
+        "title": "Engineering Manager",
+        "company": "Amazon",
+        "duration": "1 yr",
+        "description": "Built and maintained Incident Response-based systems serving 409K+ users. Led a team of 2 engineers."
+      },
+      {
+        "title": "Data Engineer",
+        "company": "Palantir",
+        "duration": "3 yrs",
+        "description": "Built and maintained 6G Research-based systems serving 413K+ users. Led a team of 8 engineers."
+      }
+    ],
+    "project": "Researching novel approaches to model compression using Airflow"
+  },
+  {
+    "bot_id": "049f0154-8cfd-58fd-a167-6dae7384e0ee",
+    "name": "Lucas Tanaka",
+    "subheading": "Backend Architect | Distributed Systems",
+    "location": "Shanghai, China",
+    "about": "Senior engineer specializing in Time Series Analysis. Previously built systems that served millions of users. Passionate about SIEM, clean architecture, and developer experience.",
+    "education": [
+      {
+        "degree": "M.S.",
+        "field": "Electrical Engineering",
+        "institution": "TU Delft",
+        "year_start": 2002,
+        "year_end": 2005
+      }
+    ],
+    "skills": [
+      "Time Series Analysis",
+      "SIEM",
+      "Redis",
+      "GCP",
+      "Microservices",
+      "Rust",
+      "Bayesian Statistics",
+      "Climate Modeling",
+      "Diffusion Models",
+      "gRPC"
+    ],
+    "experience": [
+      {
+        "title": "ML Engineer",
+        "company": "Databricks",
+        "duration": "3 yrs",
+        "description": "Built and maintained SIEM-based systems serving 442K+ users. Led a team of 11 engineers."
+      }
+    ],
+    "project": "Launching a developer productivity tool that integrates Time Series Analysis workflows"
+  },
+  {
+    "bot_id": "c35d7725-deb6-59e8-b281-aeb9e847f045",
+    "name": "Carlos Zhang",
+    "subheading": "Cloud Architect | AWS & GCP | Drug Discovery ML",
+    "location": "Los Angeles, CA",
+    "about": "Engineering lead with 9 years of experience across startups and big tech. My work spans Drug Discovery ML, Go, and everything in between. Always learning, always shipping.",
+    "education": [
+      {
+        "degree": "M.Eng",
+        "field": "Mathematics",
+        "institution": "Cambridge",
+        "year_start": 2007,
+        "year_end": 2010
+      }
+    ],
+    "skills": [
+      "Drug Discovery ML",
+      "Go",
+      "Threat Modeling",
+      "TensorFlow",
+      "FastAPI",
+      "CI/CD",
+      "Docker",
+      "Airflow",
+      "Incident Response",
+      "Digital Twins"
+    ],
+    "experience": [
+      {
+        "title": "Computational Scientist",
+        "company": "Cohere",
+        "duration": "5 yrs",
+        "description": "Built and maintained Threat Modeling-based systems serving 77K+ users. Led a team of 2 engineers."
+      }
+    ],
+    "project": "Designing a high-availability Drug Discovery ML infrastructure for fintech"
+  },
+  {
+    "bot_id": "0e9f05b0-60ec-54d0-b89d-26e6fdd432b2",
+    "name": "Suresh Williams",
+    "subheading": "Software Engineer @ InnoSoft",
+    "location": "Mumbai, India",
+    "about": "I'm a DevOps engineer who cares deeply about Java and its real-world impact. Open-source contributor. Speaker at local meetups. Currently exploring Python and what it means for the next decade of software.",
+    "education": [
+      {
+        "degree": "B.Tech",
+        "field": "Bioinformatics",
+        "institution": "Stanford",
+        "year_start": 2003,
+        "year_end": 2008
+      }
+    ],
+    "skills": [
+      "Java",
+      "Python",
+      "Elasticsearch",
+      "Sustainability Analytics",
+      "Incident Response",
+      "Airflow",
+      "Weights & Biases"
+    ],
+    "experience": [
+      {
+        "title": "DevOps Engineer",
+        "company": "Datadog",
+        "duration": "1 yr",
+        "description": "Built and maintained Java-based systems serving 195K+ users. Led a team of 8 engineers."
+      },
+      {
+        "title": "Cloud Engineer",
+        "company": "Spotify",
+        "duration": "3 yrs",
+        "description": "Built and maintained Weights & Biases-based systems serving 110K+ users. Led a team of 12 engineers."
+      },
+      {
+        "title": "Principal Engineer",
+        "company": "Amazon",
+        "duration": "3 yrs",
+        "description": "Built and maintained Incident Response-based systems serving 472K+ users. Led a team of 5 engineers."
+      }
+    ],
+    "project": "Designing a high-availability Java infrastructure for fintech"
+  },
+  {
+    "bot_id": "e15cd522-6889-53a4-9e4d-5c46bee5302b",
+    "name": "Ethan Thomas",
+    "subheading": "Founder & CTO at Anthropic",
+    "location": "Zurich, Switzerland",
+    "about": "Passionate full-stack engineer with 15+ years of experience building scalable systems. Deep expertise in FastAPI and Event-Driven Architecture. I love open source, developer communities, and turning complex problems into elegant solutions.",
+    "education": [
+      {
+        "degree": "B.S.",
+        "field": "Bioinformatics",
+        "institution": "MIT",
+        "year_start": 2015,
+        "year_end": 2018
+      }
+    ],
+    "skills": [
+      "FastAPI",
+      "Event-Driven Architecture",
+      "Digital Health",
+      "Azure",
+      "dbt",
+      "Carbon Accounting",
+      "gRPC",
+      "Genomics",
+      "NLP",
+      "Java"
+    ],
+    "experience": [
+      {
+        "title": "Staff Engineer",
+        "company": "Anthropic",
+        "duration": "5 yrs",
+        "description": "Built and maintained FastAPI-based systems serving 123K+ users. Led a team of 2 engineers."
+      },
+      {
+        "title": "Software Architect",
+        "company": "Railway",
+        "duration": "5 yrs",
+        "description": "Built and maintained gRPC-based systems serving 83K+ users. Led a team of 10 engineers."
+      },
+      {
+        "title": "AI/ML Research Lead",
+        "company": "Render",
+        "duration": "1 yr",
+        "description": "Built and maintained NLP-based systems serving 427K+ users. Led a team of 12 engineers."
+      }
+    ],
+    "project": "Creating an AI-powered code review tool using FastAPI and LLMs"
+  },
+  {
+    "bot_id": "951e7ac5-7975-5050-a1ce-9c0a87c3a20f",
+    "name": "Ava Lee",
+    "subheading": "Product Engineer | Distributed Systems | Open Source Contributor",
+    "location": "Tel Aviv, Israel",
+    "about": "Engineering lead with 2 years of experience across startups and big tech. My work spans Distributed Systems, C++, and everything in between. Always learning, always shipping.",
+    "education": [
+      {
+        "degree": "Ph.D.",
+        "field": "Artificial Intelligence",
+        "institution": "CMU",
+        "year_start": 2016,
+        "year_end": 2020
+      }
+    ],
+    "skills": [
+      "Distributed Systems",
+      "C++",
+      "AWS",
+      "Kafka",
+      "TensorFlow",
+      "Genomics"
+    ],
+    "experience": [
+      {
+        "title": "Backend Engineer",
+        "company": "Microsoft",
+        "duration": "4 yrs",
+        "description": "Built and maintained Genomics-based systems serving 146K+ users. Led a team of 10 engineers."
+      }
+    ],
+    "project": "Researching novel approaches to model compression using Distributed Systems"
+  },
+  {
+    "bot_id": "ee20de64-04e2-5987-b3ee-2dc987ebef03",
+    "name": "Carter Reyes",
+    "subheading": "Tech Lead | Mentoring developers worldwide",
+    "location": "Austin, TX",
+    "about": "Engineering lead with 14 years of experience across startups and big tech. My work spans Kafka, System Design, and everything in between. Always learning, always shipping.",
+    "education": [
+      {
+        "degree": "B.Tech",
+        "field": "Data Science",
+        "institution": "Columbia",
+        "year_start": 2007,
+        "year_end": 2010
+      }
+    ],
+    "skills": [
+      "Kafka",
+      "System Design",
+      "Python",
+      "AI Safety Research",
+      "Genomics",
+      "Threat Modeling",
+      "AWS"
+    ],
+    "experience": [
+      {
+        "title": "AI/ML Research Lead",
+        "company": "Apple",
+        "duration": "5 yrs",
+        "description": "Built and maintained AWS-based systems serving 362K+ users. Led a team of 8 engineers."
+      }
+    ],
+    "project": "Creating an educational platform that teaches Kafka interactively"
+  }
+]

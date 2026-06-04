@@ -1,0 +1,26 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# AI Social Bot Simulator — Python dependencies
+# Python >= 3.11 required
+# Install: pip install -r requirements.txt
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Async HTTP (content generation + Tayog uploads) ──────────────────────────
+aiohttp==3.11.18
+
+# ── Image processing (post-processing, metadata, watermark removal) ───────────
+Pillow==11.2.1
+
+# ── Environment variable loading from .env files ──────────────────────────────
+python-dotenv==1.1.0
+
+# ── Optional: structured logging (JSON lines) ─────────────────────────────────
+# python-json-logger==2.0.7
+
+# ── Optional: faster JSON serialisation ───────────────────────────────────────
+# orjson==3.10.11
+
+# ── Development / testing only ────────────────────────────────────────────────
+# pytest==8.3.5
+# pytest-asyncio==0.25.3
+# pytest-cov==6.1.0
+# aioresponses==0.7.8      # mock aiohttp in tests

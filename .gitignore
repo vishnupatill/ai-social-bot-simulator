@@ -1,0 +1,7 @@
+.env
+__pycache__/
+images/
+posts.json
+simulator.log
+tayog_upload.log
+venv/
